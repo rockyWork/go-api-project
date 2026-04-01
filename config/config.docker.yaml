@@ -1,0 +1,52 @@
+server:
+  port: 8080
+  mode: release
+  read_timeout: 60
+  write_timeout: 60
+
+database:
+  host: mysql
+  port: 3306
+  username: root
+  password: root123
+  dbname: go_api_project
+  charset: utf8mb4
+  parse_time: true
+  loc: Local
+  max_open_conns: 100
+  max_idle_conns: 10
+  conn_max_lifetime: 3600
+
+jwt:
+  access_secret: your-access-secret-key-change-in-production
+  refresh_secret: your-refresh-secret-key-change-in-production
+  access_expire: 7200
+  refresh_expire: 604800
+
+log:
+  level: info
+  format: json
+  output: stdout
+  file_path: ./logs/app.log
+  max_size: 100
+  max_backups: 10
+  max_age: 30
+  compress: true
+
+cors:
+  allow_origins:
+    - "*"
+  allow_methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  allow_headers:
+    - Origin
+    - Content-Type
+    - Accept
+    - Authorization
+    - X-Requested-With
+  allow_credentials: true
+  max_age: 86400
