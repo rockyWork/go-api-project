@@ -37,7 +37,7 @@ func validatePasswordStrength(fl validator.FieldLevel) bool {
 		}
 	}
 
-	return hasUpper && hasLower && hasNumber
+	return hasUpper && hasLower && hasNumber && hasSpecial
 }
 
 func IsValidEmail(email string) bool {

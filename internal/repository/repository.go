@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	"go-api-project/config"
 	"go-api-project/internal/model"
 
@@ -31,7 +33,7 @@ func New(cfg *config.DatabaseConfig) (*Repository, error) {
 
 	sqlDB.SetMaxOpenConns(cfg.MaxOpenConns)
 	sqlDB.SetMaxIdleConns(cfg.MaxIdleConns)
-	sqlDB.SetConnMaxLifetime(cfg.ConnMaxLifetime)
+	sqlDB.SetConnMaxLifetime(time.Duration(cfg.ConnMaxLifetime) * time.Second)
 
 	return &Repository{
 		DB:   db,

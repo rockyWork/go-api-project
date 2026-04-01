@@ -74,6 +74,20 @@ cd go-api-project
 go mod download
 ```
 
+###  安装choco
+第一步：安装 Chocolatey（包管理器）
+请以管理员身份打开 PowerShell，然后逐条复制以下命令：
+
+Set-ExecutionPolicy Bypass -Scope Process -Force; 
+
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; 
+
+iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+### 安装make
+choco install make -y
+
+
 ### 3. 配置数据库
 
 修改 `config/config.yaml` 中的数据库配置：
