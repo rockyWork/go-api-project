@@ -8,7 +8,7 @@
 - **用户管理**: 用户注册、登录、CRUD、权限控制
 - **分层架构**: Controller → Service → Repository 三层架构
 - **API 文档**: 自动生成 Swagger 文档
-- **容器化部署**: Docker + Docker Compose 一键部署
+- **容器化部署**: Podman + Podman Compose（推荐） 或 Docker 一键部署
 - **日志系统**: 结构化日志（Zap）
 - **配置管理**: 多环境配置文件
 - **扩展预留**: 预留 Redis、RBAC、操作日志等扩展接口
@@ -47,7 +47,7 @@ go-api-project/
 │   ├── logger/             # 日志工具
 │   └── utils/              # 工具函数
 ├── config/                 # 配置文件
-├── deployments/docker/     # Docker 配置
+├── deployments/docker/     # 容器配置（Podman/Docker）
 ├── docs/                   # 文档
 ├── scripts/                # 脚本
 └── main.go                 # 入口文件
@@ -59,7 +59,7 @@ go-api-project/
 
 - Go 1.21+
 - MySQL 8.0+
-- Docker & Docker Compose（可选）
+- Podman & Podman Compose（推荐）或 Docker & Docker Compose
 
 ### 1. 克隆项目
 
@@ -113,20 +113,34 @@ go run main.go
 make run
 ```
 
-#### Docker 部署（推荐）
+#### Podman 部署（推荐）
 
 ```bash
 # 启动所有服务（应用 + MySQL）
-docker-compose up -d
+podman-compose up -d
+# 或使用 Makefile
+make podman-up
 
 # 查看日志
-docker-compose logs -f app
+podman-compose logs -f app
+# 或
+make logs
 
 # 停止服务
-docker-compose down
+podman-compose down
+# 或
+make podman-down
 
 # 停止并删除数据卷
-docker-compose down -v
+podman-compose down -v
+```
+
+#### Docker 兼容模式
+
+如果没有安装 Podman，也可以使用原 Docker 命令：
+
+```bash
+make docker-up
 ```
 
 ### 5. 验证服务
@@ -195,9 +209,9 @@ curl -X GET http://localhost:8080/api/v1/users/me \
 
 | 服务名 | 端口 | 描述 | 启动命令 |
 |--------|------|------|----------|
-| go-api-app | 8080 | Go Web 服务 | `docker-compose up -d` 或 `go run main.go` |
-| go-api-mysql | 3306 | MySQL 数据库 | `docker-compose up -d` |
-| go-api-redis | 6379 | Redis 缓存（预留） | `docker-compose up -d`（需取消注释） |
+| go-api-app | 8080 | Go Web 服务 | `podman-compose up -d` 或 `go run main.go` |
+| go-api-mysql | 3306 | MySQL 数据库 | `podman-compose up -d` |
+| go-api-redis | 6379 | Redis 缓存（预留） | `podman-compose up -d`（需取消注释） |
 
 ## 常用命令
 
@@ -299,11 +313,15 @@ make fmt
 检查 MySQL 服务是否启动，配置文件中的数据库连接信息是否正确。
 
 ```bash
-# 检查 MySQL 容器状态
-docker-compose ps
+# 检查容器状态
+podman-compose ps
+# 或
+podman-compose ps
 
 # 查看 MySQL 日志
-docker-compose logs mysql
+podman-compose logs mysql
+# 或
+podman-compose logs mysql
 ```
 
 ### 2. 端口被占用
@@ -312,7 +330,7 @@ docker-compose logs mysql
 # 查看 8080 端口占用
 lsof -i :8080
 
-# 修改 docker-compose.yml 中的端口映射
+# 修改 compose.yml 中的端口映射
 ports:
   - "8081:8080"  # 将主机 8081 映射到容器 8080
 ```

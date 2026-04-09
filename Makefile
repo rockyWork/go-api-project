@@ -1,4 +1,4 @@
-.PHONY: build run test clean docker help swag
+.PHONY: build run test clean docker help swag podman-up podman-down podman-down-v docker-up docker-down docker-down-v
 
 # 变量
 APP_NAME=go-api-project
@@ -11,9 +11,9 @@ help:
 	@echo "  make run      - Run the application locally"
 	@echo "  make test     - Run tests"
 	@echo "  make clean    - Clean build artifacts"
-	@echo "  make docker   - Build Docker image"
-	@echo "  make up       - Start all services with Docker Compose"
-	@echo "  make down     - Stop all services"
+	@echo "  make docker   - Build container image"
+	@echo "  make podman-up - Start services with Podman (recommended)"
+	@echo "  make docker-up - Start services with Docker/Podman"
 	@echo "  make swag     - Generate Swagger documentation"
 	@echo "  make deps     - Download dependencies"
 
@@ -43,29 +43,43 @@ deps:
 swag:
 	swag init -g main.go
 
-# Docker构建
+# 容器构建 (Podman/Docker)
+build-container:
+	podman build -t $(DOCKER_IMAGE) -f deployments/docker/Dockerfile . || docker build -t $(DOCKER_IMAGE) -f deployments/docker/Dockerfile .
+
+# Docker构建 (兼容)
 docker:
-	docker build -t $(DOCKER_IMAGE) -f deployments/docker/Dockerfile .
+	$(MAKE) build-container
 
-# Docker Compose启动
+# Podman Compose启动 (推荐)
+podman-up:
+	podman-compose up -d
+
+# Podman Compose停止
+podman-down:
+	podman-compose down
+
+# Podman Compose停止并删除数据卷
+podman-down-v:
+	podman-compose down -v
+
+# 兼容旧命令（Docker）
 docker-up:
-	docker-compose up -d
+	podman-compose up -d || docker-compose up -d
 
-# Docker Compose停止
 docker-down:
-	docker-compose down
+	podman-compose down || docker-compose down
 
-# Docker Compose停止并删除数据卷
 docker-down-v:
-	docker-compose down -v
+	podman-compose down -v || docker-compose down -v
 
 # 查看日志
 logs:
-	docker-compose logs -f app
+	podman-compose logs -f app || docker-compose logs -f app
 
 # 进入容器
 shell:
-	docker-compose exec app sh
+	podman-compose exec app sh || docker-compose exec app sh
 
 # 数据库迁移（使用GORM自动迁移）
 migrate:
